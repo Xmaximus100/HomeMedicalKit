@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.firstname }}!
+{% endblock %}
+
+{% block content %}
+    <h2>Strona główna</h2>
+    <p>Witaj na stronie głównej aplikacji. Jesteś zalogowany jako {{ user.email }}.</p>
+    <!-- Możesz dodać tutaj więcej zawartości specyficznej dla zalogowanego użytkownika -->
+{% endblock %}

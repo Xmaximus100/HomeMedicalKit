@@ -1,38 +1,60 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
+class User(AbstractUser):
+    firstname = models.CharField(max_length=30, blank=True)
+    lastname = models.CharField(max_length=30, blank=True)
+    email = models.EmailField(unique=True)
 
-class Lekarz(models.Model):
-    imie = models.CharField(max_length=100)
-    nazwisko = models.CharField(max_length=100)
-    specjalizacja = models.CharField(max_length=50)
-
-    def __str__(self):
-        return f'{self.imie} {self.nazwisko} ({self.specjalizacja}) [{self.id}]'
-
-
-class Pacjent(models.Model):
-    imie = models.CharField(max_length=100)
-    nazwisko = models.CharField(max_length=100)
-    data_ur = models.DateField()
-    waga = models.IntegerField()
-
-    def __str__(self):
-        return f'{self.imie} {self.nazwisko} ({self.data_ur.strftime("%Y-%m-%d")}) /{self.waga} kg/ [{self.id}]'
-
-
-class Wizyta(models.Model):
-    pacjent = models.ForeignKey(Pacjent, on_delete=models.PROTECT)
-    lekarz = models.ForeignKey(Lekarz, on_delete=models.PROTECT)
-    data = models.DateTimeField()
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='user',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='user',
+    )
 
     def __str__(self):
-        return f'{self.data.strftime("%Y-%m-%d")} (P: {self.pacjent_id}, L: {self.lekarz_id}) [{self.id}]'
+        return self.username
 
 
-class Recepta(models.Model):
-    nazwa = models.CharField(max_length=200)
-    wizyta = models.ForeignKey(Wizyta, on_delete=models.PROTECT)
+class MedicineName(models.Model):
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'{self.nazwa} (W: {self.wizyta_id}) [{self.id}]'
+        return self.name
+
+
+class Medicine(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.ForeignKey(MedicineName, on_delete=models.CASCADE)
+    purpose = models.CharField(max_length=255)
+    quantity = models.IntegerField()
+    expiration_date = models.DateField()
+
+    def __str__(self):
+        return f'{self.name} ({self.quantity}) - Expires on {self.expiration_date}'
+
+
+class SideEffect(models.Model):
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.description
+
+
+class Substance(models.Model):
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 

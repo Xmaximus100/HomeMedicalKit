@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+Leki
+{% endblock %}
+
+{% block content %}
+    <h2>Twoje Leki</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Przeznaczenie</th>
+                <th>Ilość</th>
+                <th>Data ważności</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.purpose }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                    <td>{{ medicine.expiration_date }}</td>
+                    <td>
+                        <a href="{% url 'medicine_edit' medicine.pk %}">Edytuj</a>
+                        <a href="{% url 'medicine_delete' medicine.pk %}">Usuń</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'medicine_add' %}">Dodaj Nowy Lek</a>
+    <br>
+    <a href="{% url 'export_medicines_csv' %}">Eksportuj do CSV</a>
+    <br>
+    <a href="{% url 'side_effects_chart' %}">Pobierz wykres PDF</a>
+{% endblock %}
