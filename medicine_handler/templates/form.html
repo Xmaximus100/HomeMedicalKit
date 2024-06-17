@@ -1,5 +1,15 @@
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="my_file" />
-    <button type="submit">Upload</button>
-</form>
+{% extends "base.html" %}
+
+{% block title %}
+Dodaj/Edytuj Lek
+{% endblock %}
+
+{% block content %}
+    <h2>{% if form.instance.pk %}Edytuj{% else %}Dodaj{% endif %} Lek</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Zapisz</button>
+    </form>
+    <a href="{% url 'medicine_list' %}">Powrót do listy</a>
+{% endblock %}

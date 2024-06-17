@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+Logowanie
+{% endblock %}
+
+{% block content %}
+    <form action="{% url 'login' %}" method="POST" class="form-horizontal well">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div>{{message}}</div>
+            {% endfor %}
+        {% endif %}
+        <br>
+        <label for="username">Nazwa Użytkownika:</label>
+        <input type="name" name="username" value="" id="username" required>
+        <br><br>
+        <label for="password">Hasło:</label>
+        <input type="password" name="password" value="" id="password" required>
+        <br><br>
+        <input type="submit" class="btn btn-inverse" value="Zaloguj">
+    </form>
+{% endblock %}
+
