@@ -1,25 +1,10 @@
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+
 
 class User(AbstractUser):
-    firstname = models.CharField(max_length=30, blank=True)
-    lastname = models.CharField(max_length=30, blank=True)
-    email = models.EmailField(unique=True)
-
-    groups = models.ManyToManyField(
-        'auth.Group',
-        verbose_name='groups',
-        blank=True,
-        related_name='custom_user_set',
-        related_query_name='user',
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        verbose_name='user permissions',
-        blank=True,
-        related_name='custom_user_set',
-        related_query_name='user',
-    )
+    firstname = models.CharField(max_length=30)
+    lastname = models.CharField(max_length=30)
 
     def __str__(self):
         return self.username
@@ -33,7 +18,7 @@ class MedicineName(models.Model):
 
 
 class Medicine(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)  # Example default value, adjust as needed
     name = models.ForeignKey(MedicineName, on_delete=models.CASCADE)
     purpose = models.CharField(max_length=255)
     quantity = models.IntegerField()
