@@ -5,7 +5,8 @@ Logowanie
 {% endblock %}
 
 {% block content %}
-    <form action="{% url 'login' %}" method="POST" class="form-horizontal well">
+    <h2 class="form-heading">Logowanie</h2>
+    <form action="{% url 'login' %}" method="POST" class="form-style">
         {% csrf_token %}
         {% if messages %}
             {% for message in messages %}
@@ -14,12 +15,11 @@ Logowanie
         {% endif %}
         <br>
         <label for="username">Nazwa Użytkownika:</label>
-        <input type="name" name="username" value="" id="username" required>
+        <input type="text" name="username" value="" id="username" required>
         <br><br>
         <label for="password">Hasło:</label>
         <input type="password" name="password" value="" id="password" required>
         <br><br>
-        <input type="submit" class="btn btn-inverse" value="Zaloguj">
+        <input type="submit" class="submit-button" value="Zaloguj">
     </form>
 {% endblock %}
-

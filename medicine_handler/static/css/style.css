@@ -51,3 +51,197 @@ footer {
 footer a {
     color: #04AA6D;
 }
+
+/* Styl strony domowej */
+.main-home {
+    background-image: url(tło.jpg);
+    background-attachment: fixed;
+    padding: 10px;
+    min-height: 350px;
+    }
+
+/* Style the main-home header */
+.main-home-heading {
+    background-color: #04AA6D;
+    border-radius: 50%;
+    width: 50%;
+    color: white;
+    position: absolute;
+    top: 35%;
+    left: 22%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+    }
+
+/* Styl nagłówka formularza */
+.form-heading {
+    text-align: center;
+    padding: 20px;
+    margin: auto;
+}
+
+/* Styl formularza */
+.form-style {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Styl pól formularza */
+.form-style input, .form-style select, .form-style textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.input-file-container {
+    position: relative;
+    width: 200px;
+    left: 25%;
+}
+
+.input-file {
+    display: none;
+}
+
+.custom-file-label {
+    display: inline-block;
+    width: 100%;
+    padding: 16px 25px;
+    background-color: darkgray;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    margin: 15px;
+}
+
+.custom-file-label:hover {
+    background-color: gray;
+}
+
+/* Styl przycisku submit */
+.submit-button {
+    width: 100%;
+    background-color: #04AA6D;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.submit-button:hover {
+    background-color: #045d4a;
+}
+
+/* Styl linku powrotu */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #04AA6D;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.table-style{
+    background-color: white;
+    margin-left: 200px;
+    margin-right: 200px;
+    padding: 10px;
+    min-height: 450px;
+    }
+
+.table-heading {
+    text-align: center;
+    padding: 20px;
+    margin: auto;
+    }
+
+.table-style table {
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+.table-style td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    }
+
+.table-style tr:nth-child(even){background-color: #f2f2f2;}
+
+.table-style tr:hover {background-color: #ddd;}
+
+.table-style th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+    }
+
+.table-style a:link {
+    background-color: white;
+    width: 100%;
+    border: 2px solid #04AA6D;
+    padding: 8px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+.table-style a:hover, a:active {
+    background-color: #04AA6D;
+    color: white;
+  }
+
+.link-button {
+    background-color: #f44336;
+    width: 25%;
+    border: none;
+    color: white;
+    padding: 16px 25px;
+    text-align: center;
+    text-decoration: none;
+    margin: 15px;
+    display: inline-block;
+}
+
+.link-button:hover {
+    background-color: red;
+}
+
+#drop-area {
+    border: 2px dashed #cccccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+#drop-area.hover {
+    border-color: #04AA6D;
+}
+#file-list {
+    list-style-type: none;
+    padding: 0;
+}
+#file-list li {
+    background: #f4f4f4;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 3px;
+}

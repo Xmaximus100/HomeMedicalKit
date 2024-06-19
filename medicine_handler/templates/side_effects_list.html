@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Lista Skutków Ubocznych
+{% endblock %}
+
+{% block content %}
+<h2>Lista Skutków Ubocznych</h2>
+
+<form method="get" action="{% url 'side_effects_list' %}">
+    <label for="results_per_page">Liczba wyników na stronie:</label>
+    <input type="number" id="results_per_page" name="results_per_page" min="1" value="{{ results_per_page }}">
+    <button type="submit">Zmień</button>
+</form>
+
+<ul>
+    {% for side_effect in side_effects %}
+    <li>{{ side_effect.description }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

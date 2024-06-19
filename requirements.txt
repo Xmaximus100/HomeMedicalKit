@@ -1,0 +1,1 @@
+reportlab mysqlclient django-ckeditor django-import-export django pipenv sklearn tablib[xlsx]
