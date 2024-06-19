@@ -27,6 +27,32 @@ class Medicine(models.Model):
     def __str__(self):
         return f'{self.name} ({self.quantity}) - Expires on {self.expiration_date}'
 
+    def add_side_effect(self, description):
+        side_effect = SideEffect(medicine=self, description=description)
+        side_effect.save()
+
+    def remove_side_effect(self, side_effect_id):
+        side_effect = SideEffect.objects.get(id=side_effect_id, medicine=self)
+        side_effect.delete()
+
+    def update_side_effect(self, side_effect_id, description):
+        side_effect = SideEffect.objects.get(id=side_effect_id, medicine=self)
+        side_effect.description = description
+        side_effect.save()
+
+    def add_substance(self, name):
+        substance = Substance(medicine=self, name=name)
+        substance.save()
+
+    def remove_substance(self, substance_id):
+        substance = Substance.objects.get(id=substance_id, medicine=self)
+        substance.delete()
+
+    def update_substance(self, substance_id, name):
+        substance = Substance.objects.get(id=substance_id, medicine=self)
+        substance.name = name
+        substance.save()
+
 
 class SideEffect(models.Model):
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)

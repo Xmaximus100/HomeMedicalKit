@@ -5,7 +5,13 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}base{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/temlates_style.css' %}">
+
+        <script src="{% static 'js/gsap.min.js'%}"></script>
+        {% block scripts %}
+            <script src="{% static 'js/main.js' %}" defer></script>
+        {% endblock scripts %}
+
     </head>
     <body>
         <header>
@@ -14,14 +20,18 @@
         <nav>
             <ul>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'home' %}">Strona główna</a></li>
-                    <li><a href="{% url 'medicine_list' %}">Twoje leki</a></li>
-                    <li><a href="{% url 'side_effects_list' %}">Działania niepożądane</a></li>
-                    <li><a href="{% url 'logout' %}">Wyloguj się</a></li>
+                    <div id="card-{{forloop.counter}}">
+                        <div class="submenu"><li><a href="{% url 'home' %}">Strona główna</a></li></div>
+                        <div class="submenu"><li><a href="{% url 'medicine_list' %}">Twoje leki</a></li></div>
+                        <div class="submenu"><li><a href="{% url 'medicines_names_list' %}">Lista nazw leków</a></li></div>
+                        <div class="submenu"><li><a href="{% url 'logout' %}">Wyloguj się</a></li></div>
+                    </div>
                 {% else %}
-                    <li><a href="{% url 'start' %}">Domowa</a></li>
-                    <li><a href="{% url 'signup' %}">Zarejestruj się</a></li>
-                    <li><a href="{% url 'login' %}">Zaloguj się</a></li>
+                    <div id="card-{{forloop.counter}}">
+                        <div class="submenu"><li><a href="{% url 'start' %}">Domowa</a></li></div>
+                        <div class="submenu"><li><a href="{% url 'signup' %}">Zarejestruj się</a></li></div>
+                        <div class="submenu"><li><a href="{% url 'login' %}">Zaloguj się</a></li></div>
+                    </div>
                 {% endif %}
             </ul>
         </nav>

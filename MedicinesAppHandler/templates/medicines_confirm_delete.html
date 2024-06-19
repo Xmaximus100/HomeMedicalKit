@@ -4,11 +4,15 @@
 Usuń Lek
 {% endblock %}
 
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
 {% block content %}
-    <h2>Jesteś pewien, że chcesz usunąć lek {{ medicine.name }}?</h2>
-    <form method="post">
+    <h2 class="form-heading">Jesteś pewien, że chcesz usunąć lek {{ medicine.name }}?</h2>
+    <form method="post" class="form-style">
         {% csrf_token %}
-        <button type="submit">Usuń</button>
+        <button type="submit" class="submit-button">Usuń</button>
+        <a href="{% url 'medicine_list' %}" class="link-button">Anuluj</a>
     </form>
-    <a href="{% url 'medicine_list' %}">Anuluj</a>
 {% endblock %}

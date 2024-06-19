@@ -85,8 +85,8 @@ footer a {
 
 /* Styl formularza */
 .form-style {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 50%;
+    margin-left: 25%;
     padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
@@ -101,6 +101,17 @@ footer a {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+}
+
+/* Styl dla div i span wewnątrz formularza */
+.form-style div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-style span {
+    margin-right: 10px;
 }
 
 .input-file-container {
@@ -157,33 +168,44 @@ footer a {
     text-decoration: underline;
 }
 
-.table-style{
-    background-color: white;
-    margin-left: 200px;
-    margin-right: 200px;
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px; /* Ustawia minimalną wysokość kontenera */
     padding: 10px;
-    min-height: 450px;
-    }
+}
+
+.table-style {
+    background-color: white;
+    padding: 10px;
+    overflow-x: auto; /* Dodaj scrollbars poziomy, jeśli tabela jest zbyt szeroka */
+    margin: auto; /* Wyśrodkowanie tabeli */
+}
 
 .table-heading {
     text-align: center;
     padding: 20px;
     margin: auto;
-    }
+}
 
 .table-style table {
     width: 100%;
     border-collapse: collapse;
-    }
+}
 
-.table-style td, th {
+.table-style td, .table-style th {
     border: 1px solid #ddd;
     padding: 8px;
-    }
+}
 
-.table-style tr:nth-child(even){background-color: #f2f2f2;}
+.table-style tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
 
-.table-style tr:hover {background-color: #ddd;}
+.table-style tr:hover {
+    background-color: #ddd;
+}
 
 .table-style th {
     padding-top: 12px;
@@ -191,35 +213,72 @@ footer a {
     text-align: left;
     background-color: #04AA6D;
     color: white;
-    }
+    min-width: 50px;
+    max-width: 300px;
+}
 
-.table-style a:link {
+.table-style a:link, .table-style a:visited {
     background-color: white;
-    width: 100%;
     border: 2px solid #04AA6D;
     padding: 8px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-  }
+}
 
-.table-style a:hover, a:active {
+.table-style a:hover, .table-style a:active {
     background-color: #04AA6D;
     color: white;
-  }
+}
 
+.link-container {
+    text-align: center;
+}
+
+/* Styl link-button */
 .link-button {
     background-color: #f44336;
-    width: 25%;
+    width: 50%;
     border: none;
     color: white;
     padding: 16px 25px;
     text-align: center;
     text-decoration: none;
-    margin: 15px;
-    display: inline-block;
+    margin-left: 25%;
+    margin-top: 15px;
+    display: block; /* Ustawienie jako inline-block */
 }
 
 .link-button:hover {
     background-color: red;
+}
+
+.center-image {
+    display: block;
+    margin: auto;
+}
+
+#drop-area {
+    border: 2px dashed #cccccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#drop-area.hover {
+    border-color: #04AA6D;
+}
+
+#file-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#file-list li {
+    background: #f4f4f4;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 3px;
 }

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Details
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'medicine_list' %}" class="link-button">Powrót</a>
+    <h1 class="form-heading">{{ medicine.name }}</h1>
+    <p>Purpose: {{ medicine.purpose }}</p>
+    <p>Quantity: {{ medicine.quantity }}</p>
+    <p>Expiration Date: {{ medicine.expiration_date }}</p>
+
+    <h2 class="form-heading">Side Effects</h2>
+    <ul>
+      {% for side_effect in medicine.sideeffect_set.all %}
+        <li>{{ side_effect.description }}
+            <a href="{% url 'delete_side_effect' side_effect.id %}">Delete</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'add_side_effect' medicine.id %}" class="link-button">Add Side Effect</a>
+
+    <h2 class="form-heading">Substances</h2>
+    <ul>
+      {% for substance in medicine.substance_set.all %}
+        <li>{{ substance.name }}
+            <a href="{% url 'delete_substance' substance.id %}">Delete</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'add_substance' medicine.id %}" class="link-button">Add Substance</a>
+{% endblock %}

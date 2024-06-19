@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Usuwanie nazwy leku</h1>
+    <p>Czy na pewno chcesz usunąć nazwę leku "{{ medicine.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Potwierdź usunięcie</button>
+        <a href="{% url 'medicines_names_list' %}" class="link-button">Anuluj</a>
+    </form>
+{% endblock %}

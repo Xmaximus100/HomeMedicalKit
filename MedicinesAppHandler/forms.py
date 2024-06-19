@@ -35,3 +35,11 @@ class SubstanceForm(forms.ModelForm):
     class Meta:
         model = Substance
         fields = ['name']
+
+
+class SearchForm(forms.Form):
+    keyword = forms.CharField(label='Szukaj', required=False)
+
+
+class RecordsPerPageForm(forms.Form):
+    records_per_page = forms.IntegerField(label='Liczba rekordów na stronie', min_value=1, max_value=100, required=False)

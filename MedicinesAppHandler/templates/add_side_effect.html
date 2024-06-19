@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add Side Effect
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+  <h1 class="form-heading">Add Side Effect for {{ medicine.name }}</h1>
+  <form method="post" class="form-style">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="submit-button">Save</button>
+  </form>
+{% endblock %}

@@ -5,12 +5,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import auth
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import User, Medicine, SideEffect
-from .forms import SignUpForm, LoginForm, MedicineForm, SideEffectForm
+from django.db.models import Q
+from .models import User, Medicine, SideEffect, Substance, MedicineName
+from .forms import SignUpForm, LoginForm, MedicineForm, SideEffectForm, SubstanceForm, SearchForm, RecordsPerPageForm
 from .utils import import_medicine_names_from_csv
 import matplotlib.pyplot as plt
 import csv
-import io
+from reportlab.pdfgen import canvas
+from io import BytesIO
+import base64
 
 
 def start_view(request):
@@ -26,7 +29,7 @@ def signup_view(request):
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             messages.success(request, 'Konto zostało utworzone pomyślnie!')
-            return redirect('home')  # Przekierowanie na stronę po zalogowaniu
+            return redirect('home')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -41,7 +44,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Przekierowanie na stronę po zalogowaniu
+                return redirect('home')
             else:
                 messages.error(request, 'Nieprawidłowy email lub hasło.')
     else:
@@ -51,7 +54,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')  # Przekierowanie na stronę logowania po wylogowaniu
+    return redirect('login')
 
 
 @login_required
@@ -60,34 +63,97 @@ def home_view(request):
 
 
 @login_required
-def import_medicines_from_csv(request):
-    if request.method == 'POST' and request.FILES.get('csv_file'):
-        csv_file = request.FILES['csv_file']
+def medicines_names_list(request):
+    search_form = SearchForm(request.GET)
+    records_form = RecordsPerPageForm(request.GET)
+    medicines = MedicineName.objects.all()
+
+    # Obsługa formularza wyszukiwania
+    if search_form.is_valid():
+        keyword = search_form.cleaned_data.get('keyword', 10)
+        if keyword:
+            medicines = medicines.filter(
+                Q(name__icontains=keyword)
+            )
+
+    # Obsługa formularza ustawiania liczby rekordów na stronie
+    if records_form.is_valid():
+        records_per_page = records_form.cleaned_data.get('records_per_page')
+        if records_per_page:
+            medicines = medicines[:records_per_page]
+
+    return render(request, 'medicines_names_list.html', {
+        'medicines': medicines,
+        'search_form': search_form,
+        'records_form': records_form,
+    })
+
+
+@login_required
+def medicine_name_delete(request, medicine_id):
+    medicine = MedicineName.objects.get(id=medicine_id)
+    if request.method == 'POST':
+        medicine.delete()
+        return redirect('medicines_names_list')
+    return render(request, 'medicine_name_confirm_delete.html', {'medicine': medicine})
+
+
+@login_required
+def import_medicines_names_from_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Musisz przesłać plik w formacie CSV.')
+            return redirect('medicines_names_list')
+
+        # Obsługa przesyłanego pliku CSV
         try:
-            import_medicine_names_from_csv(csv_file)
-            messages.success(request, 'Rekordy zostały pomyślnie zaimportowane do bazy danych.')
+            reader = csv.reader(csv_file.read().decode('utf-8').splitlines())
+            for row in reader:
+                name = row[0].strip()  # zakładamy, że nazwy leków są w pierwszej kolumnie
+                if name:
+                    MedicineName.objects.get_or_create(name=name)
+
+            messages.success(request, 'Pomyślnie wczytano nazwy leków z pliku CSV.')
         except Exception as e:
-            messages.error(request, f'Wystąpił błąd podczas importowania rekordów: {str(e)}')
-    return render(request, 'import_medicines.html')
+            messages.error(request, f'Wystąpił błąd podczas importowania danych: {str(e)}')
+
+        return redirect('medicines_names_list')
+
+    return render(request, 'import_medicines_names_from_csv.html')
 
 
 @login_required
 def medicine_list(request):
     medicines = Medicine.objects.filter(user=request.user)
 
-    # Pobierz liczbę wyników na stronie z parametru GET (jeśli dostępny)
+    search_form = SearchForm(request.GET)
+    records_form = RecordsPerPageForm(request.GET)
     results_per_page = request.GET.get('results_per_page', 10)  # domyślnie 10 wyników na stronie
-    paginator = Paginator(medicines, results_per_page)
 
-    page = request.GET.get('page')
-    try:
-        medicines = paginator.page(page)
-    except PageNotAnInteger:
-        medicines = paginator.page(1)
-    except EmptyPage:
-        medicines = paginator.page(paginator.num_pages)
+    if search_form.is_valid():
+        keyword = search_form.cleaned_data.get('keyword')
+        if keyword:
+            # Filtrowanie po nazwie leku, nazwie substancji i efektach ubocznych
+            medicines = medicines.filter(
+                Q(name__name__icontains=keyword) |  # Filtr po nazwie leku
+                Q(purpose__icontains=keyword) |  # Filtr po celu leku
+                Q(substance__name__icontains=keyword) |  # Filtr po nazwie substancji
+                Q(sideeffect__description__icontains=keyword)  # Filtr po opisie efektu ubocznego
+            ).distinct()
 
-    return render(request, 'medicines_list.html', {'medicines': medicines, 'results_per_page': results_per_page})
+    # Obsługa formularza ustawiania liczby rekordów na stronie
+    if records_form.is_valid():
+        records_per_page = records_form.cleaned_data.get('records_per_page')
+        if records_per_page:
+            medicines = medicines[:records_per_page]
+
+    return render(request, 'medicines_list.html', {
+        'medicines': medicines,
+        'results_per_page': results_per_page,
+        'search_form': search_form,
+        'records_form': records_form,
+    })
 
 
 @login_required
@@ -132,17 +198,29 @@ def export_medicines_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="medicines.csv"'
     writer = csv.writer(response)
-    writer.writerow(['Name', 'Purpose', 'Quantity', 'Expiration Date'])
+    writer.writerow(['Name', 'Purpose', 'Quantity', 'Expiration Date', 'Side Effects', 'Substances'])
+
     for medicine in medicines:
-        writer.writerow([medicine.name, medicine.purpose, medicine.quantity, medicine.expiration_date])
+        side_effects = ', '.join([se.description for se in medicine.sideeffect_set.all()])
+        substances = ', '.join([substance.name for substance in medicine.substance_set.all()])
+        writer.writerow([
+            medicine.name,
+            medicine.purpose,
+            medicine.quantity,
+            medicine.expiration_date,
+            side_effects,
+            substances
+        ])
+
     return response
 
 
 @login_required
-def side_effects_list(request):
-    side_effects = SideEffect.objects.filter(medicine__user=request.user)
+def side_effects_list(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    side_effects = medicine.sideeffect_set.all()
 
-    # Pobierz liczbę wyników na stronie z parametru GET (jeśli dostępny)
+    # Obsługa formularza zmiany liczby wyników na stronie
     results_per_page = request.GET.get('results_per_page', 10)  # domyślnie 10 wyników na stronie
     paginator = Paginator(side_effects, results_per_page)
 
@@ -154,20 +232,149 @@ def side_effects_list(request):
     except EmptyPage:
         side_effects = paginator.page(paginator.num_pages)
 
-    return render(request, 'side_effects_list.html',{'side_effects': side_effects, 'results_per_page': results_per_page})
+    return render(request, 'side_effects_list.html', {
+        'medicine': medicine,
+        'side_effects': side_effects,
+        'results_per_page': results_per_page,
+    })
+
+
+@login_required
+def add_side_effect(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    if request.method == 'POST':
+        form = SideEffectForm(request.POST)
+        if form.is_valid():
+            side_effect = form.save(commit=False)
+            side_effect.medicine = medicine
+            side_effect.save()
+            return redirect('medicine_detail', medicine_id=medicine.id)
+    else:
+        form = SideEffectForm()
+    return render(request, 'add_side_effect.html', {'form': form, 'medicine': medicine})
+
+
+@login_required
+def delete_side_effect(request, side_effect_id):
+    side_effect = get_object_or_404(SideEffect, id=side_effect_id)
+    medicine_id = side_effect.medicine.id
+    side_effect.delete()
+    return redirect('medicine_detail', medicine_id=medicine_id)
 
 
 @login_required
 def side_effects_chart(request):
     medicines = Medicine.objects.filter(user=request.user)
-    side_effects_count = {medicine.name: medicine.sideeffect_set.count() for medicine in medicines}
 
-    plt.bar(side_effects_count.keys(), side_effects_count.values())
-    plt.xlabel('Medicines')
-    plt.ylabel('Number of Side Effects')
-    plt.title('Number of Side Effects for Each Medicine')
+    labels, counts = generate_side_effects_data(medicines)
 
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    return FileResponse(buf, as_attachment=True, filename='side_effects_chart.png')
+    x = range(len(labels))
+
+    plt.bar(x, counts, tick_label=labels)
+    plt.xlabel('Leki')
+    plt.ylabel('Liczba działań niepożądanych')
+    plt.title('Wykres liczby działań niepożądanych dla każdego leku')
+    plt.xticks(rotation=45)
+
+    image_buffer = BytesIO()
+    plt.tight_layout()
+    plt.savefig(image_buffer, format='png')
+    plt.close()
+
+    image_buffer.seek(0)
+    image_data = base64.b64encode(image_buffer.getvalue()).decode('utf-8')
+    image_url = 'data:image/png;base64,' + image_data
+
+    return render(request, 'side_effects_chart.html', {'image_url': image_url})
+
+
+@login_required
+def download_side_effects_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="side_effects_summary.pdf"'
+
+    medicines = Medicine.objects.filter(user=request.user)
+    labels, counts = generate_side_effects_data(medicines)
+
+    pdf = canvas.Canvas(response)
+
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(100, 800, "Summary of Side Effects for All Medicines")
+
+    pdf.setFont("Helvetica", 12)
+    y = 750
+    for label, count in zip(labels, counts):
+        pdf.drawString(100, y, f"Medicine: {label}")
+        y -= 20
+        pdf.drawString(100, y, "Side Effects Count:")
+        y -= 15
+        pdf.drawString(120, y, f"{count}")
+        y -= 20
+
+    pdf.save()
+    return response
+
+
+def generate_side_effects_data(medicines):
+    labels = []
+    counts = []
+
+    for medicine in medicines:
+        side_effects_count = SideEffect.objects.filter(medicine=medicine).count()
+        labels.append(medicine.name)
+        counts.append(side_effects_count)
+
+    return labels, counts
+
+
+@login_required
+def substances_list(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    substances = medicine.substance_set.all()
+
+    # Obsługa formularza zmiany liczby wyników na stronie
+    results_per_page = request.GET.get('results_per_page', 10)  # domyślnie 10 wyników na stronie
+    paginator = Paginator(substances, results_per_page)
+
+    page = request.GET.get('page')
+    try:
+        substances = paginator.page(page)
+    except PageNotAnInteger:
+        substances = paginator.page(1)
+    except EmptyPage:
+        substances = paginator.page(paginator.num_pages)
+
+    return render(request, 'substances_list.html', {
+        'medicine': medicine,
+        'substances': substances,
+        'results_per_page': results_per_page,
+    })
+
+
+@login_required
+def add_substance(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    if request.method == 'POST':
+        form = SubstanceForm(request.POST)
+        if form.is_valid():
+            substance = form.save(commit=False)
+            substance.medicine = medicine
+            substance.save()
+            return redirect('medicine_detail', medicine_id=medicine.id)
+    else:
+        form = SubstanceForm()
+    return render(request, 'add_substance.html', {'form': form, 'medicine': medicine})
+
+
+@login_required
+def delete_substance(request, substance_id):
+    substance = get_object_or_404(Substance, id=substance_id)
+    medicine_id = substance.medicine.id
+    substance.delete()
+    return redirect('medicine_detail', medicine_id=medicine_id)
+
+
+@login_required
+def medicine_detail(request, medicine_id):
+    medicine = get_object_or_404(Medicine, id=medicine_id)
+    return render(request, 'medicine_detail.html', {'medicine': medicine})

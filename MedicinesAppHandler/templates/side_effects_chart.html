@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <h1 class="form-heading">Wykres działań niepożądanych dla wszystkich dodanych leków</h1>
+    <img src="{{ image_url }}" alt="Side Effects Chart" class="center-image">
+    <a href="{% url 'download_side_effects_pdf' %}" class="link-button">Pobierz dane z wykresu jako pdf</a>
+    <a href="{% url 'medicine_list' %}" class="link-button">Powrót</a>
+{% endblock %}

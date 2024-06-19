@@ -8,15 +8,14 @@ Import Leków
 Witaj, {{ user.username }}!
 {% endblock %}
 
-{% block content %}
-    <h2 class="form-heading">Importuj Leki z pliku CSV</h2>
+{{% block content %}
+    <h1 class="form-heading">Importuj nazwy leków z bazy danych</h1>
 
     <form method="post" enctype="multipart/form-data" class="form-style">
         {% csrf_token %}
-        <div class="input-file-container">
-            <label for="csv_file" class="custom-file-label">Wybierz plik</label>
-            <input type="file" id="csv_file" name="csv_file" class="input-file">
-        </div>
+        <input type="file" name="csv_file" accept=".csv" required>
         <button type="submit" class="submit-button">Importuj</button>
     </form>
+
+    <a href="{% url 'medicines_names_list' %}" class="link-button">Powrót</a>
 {% endblock %}

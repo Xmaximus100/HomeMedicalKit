@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Lista Substancji
+{% endblock %}
+
+{% block content %}
+    <h2 class="form-heading">Lista substancji zawartych w lekach</h2>
+
+    <form method="get" action="{% url 'substances_list' medicine_id=medicine.id %}" class="form-style">
+        <label for="results_per_page">Liczba wyników na stronie:</label>
+        <input type="number" id="results_per_page" name="results_per_page" min="1" value="{{ results_per_page }}">
+        <input type="hidden" name="medicine_id" value="{{ medicine.id }}">
+        <button type="submit" class="submit-button">Zmień</button>
+    </form>
+
+    <h1 class="form-heading">Substances List for {{ medicine.name }}</h1>
+
+    <ul>
+        {% for substance in substances %}
+            <li>{{ substance.name }}</li>
+        {% empty %}
+            <li>No substances found for this medicine.</li>
+         {% endfor %}
+    </ul>
+{% endblock %}

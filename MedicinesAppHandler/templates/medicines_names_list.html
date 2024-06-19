@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Medicines Names List
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <h1 class="form-heading">Lista Nazw Leków</h1>
+
+    <form method="get" class="form-style">
+        {{ search_form.as_p }}
+        <button type="submit" class="submit-button">Filtruj</button>
+    </form>
+
+    <br>
+
+    <form method="get" class="form-style">
+        {{ records_form.as_p }}
+        <button type="submit" class="submit-button">Ustaw liczbę rekordów na stronie</button>
+    </form>
+
+    <a href="{% url 'import_medicines_names_from_csv' %}" class="link-button">Wczytaj leki z bazy danych</a>
+    <a href="{% url 'medicine_list' %}" class="link-button">Powrót</a>
+
+    <div class="table-container">
+        <div class="table-style">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa Leku</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                        <tr>
+                            <td>{{ medicine.id }}</td>
+                            <td>{{ medicine.name }}</td>
+                            <td>
+                                <form method="post" action="{% url 'medicine_name_delete' medicine.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć tą nazwę leku?')">Usuń</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

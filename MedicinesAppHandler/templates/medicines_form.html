@@ -4,6 +4,10 @@
 Dodaj/Edytuj Lek
 {% endblock %}
 
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
 {% block content %}
     <h2 class="form-heading">{% if form.instance.pk %}Edytuj{% else %}Dodaj{% endif %} Lek</h2>
     <form method="post" class="form-style">
@@ -11,4 +15,5 @@ Dodaj/Edytuj Lek
         {{ form.as_p }}
         <button type="submit" class="submit-button">Zapisz</button>
     </form>
+    <a href="{% url 'medicine_list' %}" class="link-button">Powrót</a>
 {% endblock %}
