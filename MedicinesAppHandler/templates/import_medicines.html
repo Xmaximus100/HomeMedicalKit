@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Import Leków
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <h2 class="form-heading">Importuj Leki z pliku CSV</h2>
+
+    <form method="post" enctype="multipart/form-data" class="form-style">
+        {% csrf_token %}
+        <div class="input-file-container">
+            <label for="csv_file" class="custom-file-label">Wybierz plik</label>
+            <input type="file" id="csv_file" name="csv_file" class="input-file">
+        </div>
+        <button type="submit" class="submit-button">Importuj</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+Logowanie
+{% endblock %}
+
+{% block content %}
+    <h2 class="form-heading">Logowanie</h2>
+    <form action="{% url 'login' %}" method="POST" class="form-style">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div>{{message}}</div>
+            {% endfor %}
+        {% endif %}
+        <br>
+        <label for="username">Nazwa Użytkownika:</label>
+        <input type="text" name="username" value="" id="username" required>
+        <br><br>
+        <label for="password">Hasło:</label>
+        <input type="password" name="password" value="" id="password" required>
+        <br><br>
+        <input type="submit" class="submit-button" value="Zaloguj">
+    </form>
+{% endblock %}

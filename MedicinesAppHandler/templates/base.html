@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}base{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    </head>
+    <body>
+        <header>
+            <h1>{% block header %}Witaj w MedicinesApp{% endblock %}</h1>
+        </header>
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'home' %}">Strona główna</a></li>
+                    <li><a href="{% url 'medicine_list' %}">Twoje leki</a></li>
+                    <li><a href="{% url 'side_effects_list' %}">Działania niepożądane</a></li>
+                    <li><a href="{% url 'logout' %}">Wyloguj się</a></li>
+                {% else %}
+                    <li><a href="{% url 'start' %}">Domowa</a></li>
+                    <li><a href="{% url 'signup' %}">Zarejestruj się</a></li>
+                    <li><a href="{% url 'login' %}">Zaloguj się</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        <footer>
+            <address>
+                Akademia Górniczo-Hutnicza im. Stanisława Staszica w Krakowie<br>
+                EAIiIB, Inżynieria Biomedyczna<br><br>
+                Łukasz Pysz, Patryk Celebański<br>
+                Kontakt: <a href="mailto:pysz@student.agh.edu.pl">pysz@student.agh.edu.pl</a><br>
+                <p>&copy; 2024 MedicinesApp</p>
+            </address>
+        </footer>
+    </body>
+</html>

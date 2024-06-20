@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+Leki
+{% endblock %}
+
+{% block header %}
+Witaj, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <h2 class="table-heading">Twoje Leki</h2>
+    <form method="get" action="{% url 'medicine_list' %}" class="form-style">
+        <label for="results_per_page">Liczba wyników na stronie:</label>
+        <input type="number" id="results_per_page" name="results_per_page" min="1" value="{{ results_per_page }}">
+        <button type="submit" class="submit-button">Zmień</button>
+    </form>
+    <a href="{% url 'import_medicines_from_csv' %}" class="link-button">Zczytaj leki z recepty</a>
+    <a href="{% url 'medicine_add' %}" class="link-button">Dodaj Nowy Lek</a>
+    <a href="{% url 'export_medicines_csv' %}" class="link-button">Eksportuj do CSV</a>
+    <table class="table-style">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Przeznaczenie</th>
+                <th>Ilość</th>
+                <th>Data ważności</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.user_id }}</td>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.purpose }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                    <td>{{ medicine.expiration_date }}</td>
+                    <td>
+                        <a href="{% url 'medicine_edit' medicine.pk %}">Edytuj</a>
+                        <a href="{% url 'medicine_delete' medicine.pk %}">Usuń</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
